@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SIMGUD — Sistem Informasi Gudang</title>
+<style>
+:root{
+  --ink:#1c2321; --paper:#f6f5f1; --line:#d8d4c8; --accent:#3a5a40; --accent2:#a3b18a;
+  --warn:#b5432a; --card:#ffffff;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--paper);color:var(--ink);font:15px/1.5 "Segoe UI",Helvetica,Arial,sans-serif;background:var(--card)}
+body{background:var(--paper)}
+.hide{display:none!important}
+
+/* LOGIN */
+#login{min-height:100%;display:flex;align-items:center;justify-content:center;padding:24px}
+.login-box{background:var(--card);border:1px solid var(--line);border-radius:4px;padding:36px 32px;width:100%;max-width:340px}
+.login-box h1{font-size:20px;margin:0 0 4px;letter-spacing:.2px}
+.login-box p{margin:0 0 22px;color:#6b6b63;font-size:13px}
+label{display:block;font-size:12px;color:#555;margin:14px 0 4px}
+input,select{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:3px;font-size:14px;background:#fff;color:var(--ink)}
+button{cursor:pointer;font:inherit}
+.btn{background:var(--accent);color:#fff;border:none;border-radius:3px;padding:9px 16px;font-size:14px}
+.btn:hover{background:#2e4833}
+.btn-ghost{background:transparent;border:1px solid var(--line);color:var(--ink)}
+.btn-warn{background:var(--warn)}
+.btn-sm{padding:5px 10px;font-size:12px}
+.login-box .btn{width:100%;margin-top:20px}
+.hint{margin-top:16px;font-size:11px;color:#9a9a90;border-top:1px dashed var(--line);padding-top:12px}
+.err{color:var(--warn);font-size:12px;margin-top:10px;min-height:14px}
+
+/* APP SHELL */
+#app{display:none;min-height:100%}
+#app.on{display:flex}
+nav{width:190px;flex:0 0 190px;background:#20281f;color:#e7e8e0;padding:18px 0;display:flex;flex-direction:column}
+nav .brand{padding:0 18px 16px;font-weight:600;letter-spacing:.3px;border-bottom:1px solid #34402f;margin-bottom:8px}
+nav .who{padding:0 18px 14px;font-size:12px;color:#a9b09f;border-bottom:1px solid #34402f;margin-bottom:8px}
+nav button.tab{display:block;width:100%;text-align:left;background:none;border:none;color:#cfd2c6;padding:10px 18px;font-size:13.5px}
+nav button.tab.active{background:#39493a;color:#fff;font-weight:600}
+nav button.tab:hover{background:#2c3a2c}
+nav .logout{margin-top:auto;padding:12px 18px;background:none;border:none;color:#c98a6f;text-align:left;font-size:13px}
+main{flex:1;padding:26px 30px;overflow-x:auto;max-width:100%}
+main h2{margin:0 0 4px;font-size:19px}
+main .sub{color:#6b6b63;font-size:13px;margin:0 0 18px}
+.grid4{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:22px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:4px;padding:14px 16px}
+.kpi .n{font-size:24px;font-weight:600}
+.kpi .l{font-size:12px;color:#6b6b63;margin-top:2px}
+.kpi.warn .n{color:var(--warn)}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:4px;padding:18px;margin-bottom:20px}
+.panel h3{margin:0 0 12px;font-size:14px;text-transform:uppercase;letter-spacing:.4px;color:#555}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}
+.field{flex:1;min-width:120px}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{border-bottom:1px solid var(--line);text-align:left;padding:7px 8px;white-space:nowrap}
+th{color:#666;font-weight:600;font-size:11.5px;text-transform:uppercase}
+tbody tr:hover{background:#faf9f5}
+.tblwrap{overflow-x:auto}
+.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px}
+.badge.ok{background:#e5efe1;color:var(--accent)}
+.badge.low{background:#f6e4de;color:var(--warn)}
+.tabs2{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap}
+.tabs2 button{border:1px solid var(--line);background:#fff;padding:6px 12px;border-radius:3px;font-size:12.5px}
+.tabs2 button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.small{font-size:12px;color:#777}
+.admin-only{}
+@media(max-width:720px){
+  #app.on{flex-direction:column}
+  nav{width:100%;flex:none;flex-direction:row;flex-wrap:wrap;padding:10px}
+  nav .brand,nav .who{border:none;padding:6px 10px;margin:0}
+  nav .logout{margin-top:0}
+  main{padding:16px}
+}
+</style>
+</head>
+<body>
+
+<div id="login">
+  <div class="login-box">
+    <h1>SIMGUD</h1>
+    <p>Sistem Informasi Gudang — di buat oleh RASYA ADITYA PERWIRA IT 3</p>
+    <label>Peran</label>
+    <select id="loginRole"><option value="admin">Admin</option><option value="petugas">Petugas</option></select>
+    <label>Username</label>
+    <input id="loginUser" placeholder="admin / petugas">
+    <label>Kata sandi</label>
+    <input id="loginPass" type="password" placeholder="••••••••">
+    <button class="btn" onclick="doLogin()">Masuk</button>
+    <div class="err" id="loginErr"></div>
+    <div class="hint">Demo — Admin: <b>admin / admin123</b><br>Petugas: <b>petugas / petugas123</b></div>
+  </div>
+</div>
+
+<div id="app">
+  <nav>
+    <div class="brand">SIMGUD</div>
+    <div class="who">Masuk sebagai<br><b id="whoName"></b></div>
+    <button class="tab" data-tab="dashboard">Dashboard</button>
+    <button class="tab admin-only" data-tab="master">Master Barang</button>
+    <button class="tab" data-tab="masuk">Barang Masuk</button>
+    <button class="tab" data-tab="keluar">Barang Keluar</button>
+    <button class="tab" data-tab="distribusi">Distribusi</button>
+    <button class="tab" data-tab="laporan">Laporan</button>
+    <button class="logout" onclick="doLogout()">Keluar</button>
+  </nav>
+  <main id="main"></main>
+</div>
+
+<script>
+const LS_KEY='simgud_data_v1';
+const SEED = {
+  barang:[
+    {kode:'BRG001',nama:'Kertas A4',satuan:'rim',min:20,stok:100},
+    {kode:'BRG002',nama:'Pulpen',satuan:'pcs',min:30,stok:200},
+    {kode:'BRG003',nama:'Buku Tulis',satuan:'pcs',min:30,stok:150},
+    {kode:'BRG004',nama:'Tinta Printer',satuan:'botol',min:10,stok:30},
+    {kode:'BRG005',nama:'Map Plastik',satuan:'pcs',min:20,stok:100},
+  ],
+  masuk:[], keluar:[], distribusi:[]
+};
+let DB = JSON.parse(localStorage.getItem(LS_KEY) || 'null') || JSON.parse(JSON.stringify(SEED));
+let USER = null;
+function save(){ try{ localStorage.setItem(LS_KEY, JSON.stringify(DB)); }catch(e){} }
+function todayStr(){ return new Date().toISOString().slice(0,10); }
+
+// ---------- AUTH ----------
+const USERS = {
+  admin:{pass:'admin123',role:'admin',label:'Admin'},
+  petugas:{pass:'petugas123',role:'petugas',label:'Petugas'}
+};
+function doLogin(){
+  const u=document.getElementById('loginUser').value.trim().toLowerCase();
+  const p=document.getElementById('loginPass').value;
+  const rec=USERS[u];
+  const err=document.getElementById('loginErr');
+  if(!rec || rec.pass!==p){ err.textContent='Username atau kata sandi salah.'; return; }
+  USER={username:u, role:rec.role, label:rec.label};
+  err.textContent='';
+  document.getElementById('login').style.display='none';
+  document.getElementById('app').classList.add('on');
+  document.getElementById('whoName').textContent = rec.label + ' ('+u+')';
+  document.querySelectorAll('.admin-only').forEach(el=> el.style.display = USER.role==='admin' ? '' : 'none');
+  render('dashboard');
+}
+function doLogout(){
+  USER=null;
+  document.getElementById('app').classList.remove('on');
+  document.getElementById('login').style.display='flex';
+  document.getElementById('loginPass').value='';
+}
+document.querySelectorAll('nav .tab').forEach(b=> b.addEventListener('click', ()=> render(b.dataset.tab)));
+
+// ---------- HELPERS ----------
+function barangOptions(sel){
+  return DB.barang.map(b=>`<option value="${b.kode}" ${b.kode===sel?'selected':''}>${b.kode} — ${b.nama} (stok ${b.stok})</option>`).join('');
+}
+function findBarang(kode){ return DB.barang.find(b=>b.kode===kode); }
+function esc(s){ return String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+// ---------- RENDER ROUTER ----------
+function render(tab){
+  document.querySelectorAll('nav .tab').forEach(b=> b.classList.toggle('active', b.dataset.tab===tab));
+  const m=document.getElementById('main');
+  if(tab==='master' && USER.role!=='admin') tab='dashboard';
+  if(tab==='dashboard') m.innerHTML=viewDashboard();
+  else if(tab==='master') m.innerHTML=viewMaster();
+  else if(tab==='masuk') m.innerHTML=viewMasuk();
+  else if(tab==='keluar') m.innerHTML=viewKeluar();
+  else if(tab==='distribusi') m.innerHTML=viewDistribusi();
+  else if(tab==='laporan') m.innerHTML=viewLaporan();
+  wireEvents(tab);
+}
+
+// ---------- DASHBOARD ----------
+function viewDashboard(){
+  const totalBarang=DB.barang.length;
+  const totalStok=DB.barang.reduce((s,b)=>s+b.stok,0);
+  const totalMasuk=DB.masuk.reduce((s,t)=>s+t.jumlah,0);
+  const totalKeluar=DB.keluar.reduce((s,t)=>s+t.jumlah,0)+DB.distribusi.reduce((s,t)=>s+t.jumlah,0);
+  const rendah=DB.barang.filter(b=>b.stok<=b.min);
+  return `
+  <h2>Dashboard</h2><p class="sub">Ringkasan kondisi gudang saat ini</p>
+  <div class="grid4">
+    <div class="kpi"><div class="n">${totalBarang}</div><div class="l">Jenis Barang</div></div>
+    <div class="kpi"><div class="n">${totalStok}</div><div class="l">Total Stok</div></div>
+    <div class="kpi"><div class="n">${totalMasuk}</div><div class="l">Total Barang Masuk</div></div>
+    <div class="kpi"><div class="n">${totalKeluar}</div><div class="l">Total Barang Keluar</div></div>
+    <div class="kpi ${rendah.length?'warn':''}"><div class="n">${rendah.length}</div><div class="l">Stok Minimum</div></div>
+  </div>
+  <div class="panel">
+    <h3>Stok Barang</h3>
+    <div class="tblwrap"><table><thead><tr><th>Kode</th><th>Nama</th><th>Satuan</th><th>Stok</th><th>Status</th></tr></thead><tbody>
+      ${DB.barang.map(b=>`<tr><td>${b.kode}</td><td>${esc(b.nama)}</td><td>${b.satuan}</td><td>${b.stok}</td>
+        <td>${b.stok<=b.min?'<span class="badge low">Rendah</span>':'<span class="badge ok">Aman</span>'}</td></tr>`).join('')}
+    </tbody></table></div>
+  </div>`;
+}
+
+// ---------- MASTER BARANG ----------
+function viewMaster(){
+  return `
+  <h2>Master Barang</h2><p class="sub">Kelola data barang gudang</p>
+  <div class="panel">
+    <h3>Tambah / Edit Barang</h3>
+    <form id="fBarang">
+      <input type="hidden" id="mEditKode">
+      <div class="row">
+        <div class="field"><label>Kode</label><input id="mKode" required></div>
+        <div class="field"><label>Nama Barang</label><input id="mNama" required></div>
+        <div class="field"><label>Satuan</label><input id="mSatuan" placeholder="pcs / rim / botol" required></div>
+        <div class="field"><label>Stok Awal</label><input id="mStok" type="number" min="0" required></div>
+        <div class="field"><label>Stok Minimum</label><input id="mMin" type="number" min="0" required></div>
+        <button class="btn" type="submit">Simpan</button>
+      </div>
+    </form>
+  </div>
+  <div class="panel">
+    <h3>Cari Barang</h3>
+    <input id="mCari" placeholder="Cari kode atau nama…" style="max-width:280px">
+    <div class="tblwrap" style="margin-top:12px"><table><thead><tr><th>Kode</th><th>Nama</th><th>Satuan</th><th>Stok</th><th>Min</th><th></th></tr></thead>
+    <tbody id="mBody"></tbody></table></div>
+  </div>`;
+}
+function renderMasterTable(filter){
+  const f=(filter||'').toLowerCase();
+  const rows=DB.barang.filter(b=> b.kode.toLowerCase().includes(f) || b.nama.toLowerCase().includes(f));
+  document.getElementById('mBody').innerHTML = rows.map(b=>`
+    <tr><td>${b.kode}</td><td>${esc(b.nama)}</td><td>${b.satuan}</td><td>${b.stok}</td><td>${b.min}</td>
+    <td><button class="btn-ghost btn-sm" onclick="editBarang('${b.kode}')">Edit</button>
+    <button class="btn-warn btn-sm" style="color:#fff" onclick="hapusBarang('${b.kode}')">Hapus</button></td></tr>`).join('')
+    || '<tr><td colspan="6" class="small">Tidak ada data.</td></tr>';
+}
+function editBarang(kode){
+  const b=findBarang(kode); if(!b) return;
+  document.getElementById('mEditKode').value=b.kode;
+  document.getElementById('mKode').value=b.kode;
+  document.getElementById('mKode').disabled=true;
+  document.getElementById('mNama').value=b.nama;
+  document.getElementById('mSatuan').value=b.satuan;
+  document.getElementById('mStok').value=b.stok;
+  document.getElementById('mMin').value=b.min;
+}
+function hapusBarang(kode){
+  if(!confirm('Hapus barang '+kode+'?')) return;
+  DB.barang=DB.barang.filter(b=>b.kode!==kode); save(); renderMasterTable(document.getElementById('mCari').value);
+}
+
+// ---------- BARANG MASUK ----------
+function viewMasuk(){
+  return `
+  <h2>Barang Masuk</h2><p class="sub">Catat penerimaan barang dari supplier</p>
+  <div class="panel">
+    <form id="fMasuk">
+      <div class="row">
+        <div class="field"><label>Tanggal</label><input id="inTgl" type="date" value="${todayStr()}" required></div>
+        <div class="field"><label>Barang</label><select id="inBarang">${barangOptions()}</select></div>
+        <div class="field"><label>Jumlah</label><input id="inJumlah" type="number" min="1" required></div>
+        <div class="field"><label>Supplier</label><input id="inSupplier" placeholder="Nama supplier" required></div>
+        <button class="btn" type="submit">Simpan &amp; Tambah Stok</button>
+      </div>
+    </form>
+  </div>
+  <div class="panel"><h3>Riwayat Barang Masuk</h3>
+    <div class="tblwrap"><table><thead><tr><th>Tanggal</th><th>Barang</th><th>Jumlah</th><th>Supplier</th></tr></thead>
+    <tbody>${DB.masuk.slice().reverse().map(t=>`<tr><td>${t.tanggal}</td><td>${t.kode} — ${esc(t.nama)}</td><td>${t.jumlah}</td><td>${esc(t.supplier)}</td></tr>`).join('') || '<tr><td colspan="4" class="small">Belum ada transaksi.</td></tr>'}</tbody></table></div>
+  </div>`;
+}
+
+// ---------- BARANG KELUAR ----------
+function viewKeluar(){
+  return `
+  <h2>Barang Keluar</h2><p class="sub">Catat pengeluaran barang dari gudang</p>
+  <div class="panel">
+    <form id="fKeluar">
+      <div class="row">
+        <div class="field"><label>Tanggal</label><input id="outTgl" type="date" value="${todayStr()}" required></div>
+        <div class="field"><label>Barang</label><select id="outBarang">${barangOptions()}</select></div>
+        <div class="field"><label>Jumlah</label><input id="outJumlah" type="number" min="1" required></div>
+        <div class="field"><label>Tujuan</label><input id="outTujuan" required></div>
+        <div class="field"><label>Penerima</label><input id="outPenerima" required></div>
+        <button class="btn" type="submit">Simpan &amp; Kurangi Stok</button>
+      </div>
+    </form>
+  </div>
+  <div class="panel"><h3>Riwayat Barang Keluar</h3>
+    <div class="tblwrap"><table><thead><tr><th>Tanggal</th><th>Barang</th><th>Jumlah</th><th>Tujuan</th><th>Penerima</th></tr></thead>
+    <tbody>${DB.keluar.slice().reverse().map(t=>`<tr><td>${t.tanggal}</td><td>${t.kode} — ${esc(t.nama)}</td><td>${t.jumlah}</td><td>${esc(t.tujuan)}</td><td>${esc(t.penerima)}</td></tr>`).join('') || '<tr><td colspan="5" class="small">Belum ada transaksi.</td></tr>'}</tbody></table></div>
+  </div>`;
+}
+
+// ---------- DISTRIBUSI ----------
+function viewDistribusi(){
+  return `
+  <h2>Distribusi</h2><p class="sub">Catat distribusi barang ke unit/bagian</p>
+  <div class="panel">
+    <form id="fDist">
+      <div class="row">
+        <div class="field"><label>Tanggal</label><input id="dTgl" type="date" value="${todayStr()}" required></div>
+        <div class="field"><label>Barang</label><select id="dBarang">${barangOptions()}</select></div>
+        <div class="field"><label>Jumlah</label><input id="dJumlah" type="number" min="1" required></div>
+        <div class="field"><label>Tujuan</label><input id="dTujuan" placeholder="mis. Bagian Tata Usaha" required></div>
+        <div class="field"><label>Penerima</label><input id="dPenerima" required></div>
+        <div class="field"><label>Status</label><select id="dStatus"><option>Terkirim</option><option>Diproses</option><option>Tertunda</option></select></div>
+        <button class="btn" type="submit">Simpan Distribusi</button>
+      </div>
+    </form>
+  </div>
+  <div class="panel"><h3>Riwayat Distribusi</h3>
+    <div class="tblwrap"><table><thead><tr><th>Tanggal</th><th>Barang</th><th>Jumlah</th><th>Tujuan</th><th>Penerima</th><th>Status</th></tr></thead>
+    <tbody>${DB.distribusi.slice().reverse().map(t=>`<tr><td>${t.tanggal}</td><td>${t.kode} — ${esc(t.nama)}</td><td>${t.jumlah}</td><td>${esc(t.tujuan)}</td><td>${esc(t.penerima)}</td><td>${t.status}</td></tr>`).join('') || '<tr><td colspan="6" class="small">Belum ada distribusi.</td></tr>'}</tbody></table></div>
+  </div>`;
+}
+
+// ---------- LAPORAN ----------
+let lapTab='stok';
+function viewLaporan(){
+  return `
+  <h2>Laporan</h2><p class="sub">Ringkasan seluruh transaksi gudang</p>
+  <div class="tabs2">
+    <button data-l="stok" class="${lapTab==='stok'?'active':''}">Stok Barang</button>
+    <button data-l="masuk" class="${lapTab==='masuk'?'active':''}">Barang Masuk</button>
+    <button data-l="keluar" class="${lapTab==='keluar'?'active':''}">Barang Keluar</button>
+    <button data-l="distribusi" class="${lapTab==='distribusi'?'active':''}">Distribusi</button>
+  </div>
+  <div class="panel" id="lapBody"></div>`;
+}
+function renderLaporan(){
+  const el=document.getElementById('lapBody'); if(!el) return;
+  if(lapTab==='stok'){
+    el.innerHTML=`<div class="tblwrap"><table><thead><tr><th>Kode</th><th>Nama</th><th>Satuan</th><th>Stok Akhir</th><th>Status</th></tr></thead><tbody>
+    ${DB.barang.map(b=>`<tr><td>${b.kode}</td><td>${esc(b.nama)}</td><td>${b.satuan}</td><td>${b.stok}</td><td>${b.stok<=b.min?'<span class="badge low">Rendah</span>':'<span class="badge ok">Aman</span>'}</td></tr>`).join('')}
+    </tbody></table></div>`;
+  } else if(lapTab==='masuk'){
+    el.innerHTML=`<div class="tblwrap"><table><thead><tr><th>Tanggal</th><th>Kode</th><th>Barang</th><th>Jumlah</th><th>Supplier</th></tr></thead><tbody>
+    ${DB.masuk.map(t=>`<tr><td>${t.tanggal}</td><td>${t.kode}</td><td>${esc(t.nama)}</td><td>${t.jumlah}</td><td>${esc(t.supplier)}</td></tr>`).join('') || '<tr><td colspan="5" class="small">Tidak ada data.</td></tr>'}
+    </tbody></table></div>`;
+  } else if(lapTab==='keluar'){
+    el.innerHTML=`<div class="tblwrap"><table><thead><tr><th>Tanggal</th><th>Kode</th><th>Barang</th><th>Jumlah</th><th>Tujuan</th><th>Penerima</th></tr></thead><tbody>
+    ${DB.keluar.map(t=>`<tr><td>${t.tanggal}</td><td>${t.kode}</td><td>${esc(t.nama)}</td><td>${t.jumlah}</td><td>${esc(t.tujuan)}</td><td>${esc(t.penerima)}</td></tr>`).join('') || '<tr><td colspan="6" class="small">Tidak ada data.</td></tr>'}
+    </tbody></table></div>`;
+  } else {
+    el.innerHTML=`<div class="tblwrap"><table><thead><tr><th>Tanggal</th><th>Kode</th><th>Barang</th><th>Jumlah</th><th>Tujuan</th><th>Penerima</th><th>Status</th></tr></thead><tbody>
+    ${DB.distribusi.map(t=>`<tr><td>${t.tanggal}</td><td>${t.kode}</td><td>${esc(t.nama)}</td><td>${t.jumlah}</td><td>${esc(t.tujuan)}</td><td>${esc(t.penerima)}</td><td>${t.status}</td></tr>`).join('') || '<tr><td colspan="7" class="small">Tidak ada data.</td></tr>'}
+    </tbody></table></div>`;
+  }
+}
+
+// ---------- EVENT WIRING ----------
+function wireEvents(tab){
+  if(tab==='master'){
+    renderMasterTable('');
+    document.getElementById('mCari').addEventListener('input', e=> renderMasterTable(e.target.value));
+    document.getElementById('fBarang').addEventListener('submit', function(e){
+      e.preventDefault();
+      const editing=document.getElementById('mEditKode').value;
+      const kode=document.getElementById('mKode').value.trim();
+      const nama=document.getElementById('mNama').value.trim();
+      const satuan=document.getElementById('mSatuan').value.trim();
+      const stok=parseInt(document.getElementById('mStok').value,10);
+      const min=parseInt(document.getElementById('mMin').value,10);
+      if(editing){
+        const b=findBarang(editing); Object.assign(b,{nama,satuan,stok,min});
+      } else {
+        if(findBarang(kode)){ alert('Kode sudah dipakai.'); return; }
+        DB.barang.push({kode,nama,satuan,stok,min});
+      }
+      save(); this.reset(); document.getElementById('mKode').disabled=false; document.getElementById('mEditKode').value='';
+      renderMasterTable('');
+    });
+  }
+  if(tab==='masuk'){
+    document.getElementById('fMasuk').addEventListener('submit', function(e){
+      e.preventDefault();
+      const kode=document.getElementById('inBarang').value, b=findBarang(kode);
+      const jumlah=parseInt(document.getElementById('inJumlah').value,10);
+      b.stok+=jumlah;
+      DB.masuk.push({tanggal:document.getElementById('inTgl').value,kode,nama:b.nama,jumlah,supplier:document.getElementById('inSupplier').value.trim()});
+      save(); render('masuk');
+    });
+  }
+  if(tab==='keluar'){
+    document.getElementById('fKeluar').addEventListener('submit', function(e){
+      e.preventDefault();
+      const kode=document.getElementById('outBarang').value, b=findBarang(kode);
+      const jumlah=parseInt(document.getElementById('outJumlah').value,10);
+      if(jumlah>b.stok){ alert('Stok tidak cukup. Stok saat ini: '+b.stok); return; }
+      b.stok-=jumlah;
+      DB.keluar.push({tanggal:document.getElementById('outTgl').value,kode,nama:b.nama,jumlah,tujuan:document.getElementById('outTujuan').value.trim(),penerima:document.getElementById('outPenerima').value.trim()});
+      save(); render('keluar');
+    });
+  }
+  if(tab==='distribusi'){
+    document.getElementById('fDist').addEventListener('submit', function(e){
+      e.preventDefault();
+      const kode=document.getElementById('dBarang').value, b=findBarang(kode);
+      const jumlah=parseInt(document.getElementById('dJumlah').value,10);
+      if(jumlah>b.stok){ alert('Stok tidak cukup. Stok saat ini: '+b.stok); return; }
+      b.stok-=jumlah;
+      DB.distribusi.push({tanggal:document.getElementById('dTgl').value,kode,nama:b.nama,jumlah,tujuan:document.getElementById('dTujuan').value.trim(),penerima:document.getElementById('dPenerima').value.trim(),status:document.getElementById('dStatus').value});
+      save(); render('distribusi');
+    });
+  }
+  if(tab==='laporan'){
+    renderLaporan();
+    document.querySelectorAll('.tabs2 button').forEach(btn=>{
+      btn.addEventListener('click', ()=>{ lapTab=btn.dataset.l; render('laporan'); });
+    });
+  }
+}
+</script>
+</body>
+</html>
