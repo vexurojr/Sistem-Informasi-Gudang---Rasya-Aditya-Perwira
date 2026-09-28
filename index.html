@@ -30,7 +30,9 @@ button{cursor:pointer;font:inherit}
 .btn-warn{background:var(--warn)}
 .btn-sm{padding:5px 10px;font-size:12px}
 .login-box .btn{width:100%;margin-top:20px}
-.hint{margin-top:16px;font-size:11px;color:#9a9a90;border-top:1px dashed var(--line);padding-top:12px}
+.switch{margin-top:16px;font-size:12.5px;color:#6b6b63;text-align:center;border-top:1px dashed var(--line);padding-top:12px}
+.switch a{color:var(--accent);font-weight:600;cursor:pointer;text-decoration:underline}
+.ok{color:var(--accent)}
 .err{color:var(--warn);font-size:12px;margin-top:10px;min-height:14px}
 
 /* APP SHELL */
@@ -75,6 +77,79 @@ tbody tr:hover{background:#faf9f5}
   nav .logout{margin-top:0}
   main{padding:16px}
 }
+
+/* ===== ANIMASI ===== */
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes popIn{from{opacity:0;transform:translateY(22px) scale(.96)}to{opacity:1;transform:none}}
+@keyframes floaty{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(40px,-30px) scale(1.12)}}
+@keyframes floaty2{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-50px,35px) scale(1.08)}}
+@keyframes slideIn{from{opacity:0;transform:translateX(-14px)}to{opacity:1;transform:none}}
+#app.on{animation:fadeIn .45s ease both}
+#app.on nav{animation:slideIn .5s ease both}
+main > *{animation:rise .45s cubic-bezier(.2,.7,.2,1) both}
+main > *:nth-child(2){animation-delay:.06s}
+main > *:nth-child(3){animation-delay:.12s}
+main > *:nth-child(4){animation-delay:.18s}
+.kpi{transition:transform .25s ease,box-shadow .25s ease,border-color .25s ease}
+.kpi:hover{transform:translateY(-4px);box-shadow:0 10px 22px rgba(58,90,64,.16);border-color:var(--accent2)}
+.grid4 .kpi{animation:rise .5s cubic-bezier(.2,.7,.2,1) both}
+.grid4 .kpi:nth-child(2){animation-delay:.07s}
+.grid4 .kpi:nth-child(3){animation-delay:.14s}
+.grid4 .kpi:nth-child(4){animation-delay:.21s}
+.grid4 .kpi:nth-child(5){animation-delay:.28s}
+.panel{transition:box-shadow .25s ease}
+.panel:hover{box-shadow:0 8px 24px rgba(28,35,33,.07)}
+.btn,.btn-ghost,.btn-warn,.tabs2 button{transition:transform .15s ease,background .2s ease,box-shadow .2s ease,filter .2s ease}
+.btn:hover{transform:translateY(-1px);box-shadow:0 6px 14px rgba(58,90,64,.28)}
+.btn:active,.btn-ghost:active,.btn-warn:active{transform:translateY(0) scale(.97);box-shadow:none}
+nav button.tab{transition:background .2s ease,padding-left .2s ease,color .2s ease}
+nav button.tab:hover{padding-left:24px}
+tbody tr{transition:background .2s ease}
+tbody tr:hover{background:#f0f5ec}
+tbody tr{animation:fadeIn .4s ease both}
+input,select{transition:border-color .2s ease,box-shadow .2s ease,background .2s ease}
+input:focus,select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(163,177,138,.45)}
+.badge{transition:transform .2s ease}
+tr:hover .badge{transform:scale(1.08)}
+
+/* ===== LOGIN GLASS ===== */
+#login{position:relative;overflow:hidden;
+  background:linear-gradient(135deg,#1f3a2a 0%,#3a5a40 45%,#6b8f5e 100%)}
+#login::before,#login::after{content:"";position:absolute;border-radius:50%;filter:blur(60px);opacity:.75;pointer-events:none}
+#login::before{width:340px;height:340px;background:#a3b18a;top:8%;left:12%;animation:floaty 12s ease-in-out infinite}
+#login::after{width:400px;height:400px;background:#dad7a4;bottom:2%;right:8%;opacity:.5;animation:floaty2 15s ease-in-out infinite}
+#login .login-box{position:relative;z-index:1;
+  background:rgba(255,255,255,.14);
+  -webkit-backdrop-filter:blur(20px) saturate(160%);backdrop-filter:blur(20px) saturate(160%);
+  border:1px solid rgba(255,255,255,.38);border-radius:18px;
+  box-shadow:0 20px 50px rgba(10,30,18,.35),inset 0 1px 0 rgba(255,255,255,.35);
+  color:#fff;animation:popIn .7s cubic-bezier(.2,.7,.2,1) both}
+#login .login-box h1{color:#fff;font-size:24px}
+#login .login-box p{color:rgba(255,255,255,.8)}
+#login label{color:rgba(255,255,255,.88)}
+#login input,#login select{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.35);color:#fff;border-radius:10px}
+#login input::placeholder{color:rgba(255,255,255,.55)}
+#login select option{color:#1c2321}
+#login input:focus,#login select:focus{background:rgba(255,255,255,.24);border-color:#fff;box-shadow:0 0 0 3px rgba(255,255,255,.25)}
+#login input:-webkit-autofill{-webkit-text-fill-color:#fff;transition:background-color 9999s}
+#login .btn{background:rgba(255,255,255,.92);color:#2e4833;font-weight:700;border-radius:10px}
+#login .btn:hover{background:#fff;box-shadow:0 8px 20px rgba(0,0,0,.25)}
+#login .switch{color:rgba(255,255,255,.8);border-top-color:rgba(255,255,255,.3)}
+#login .switch a{color:#fff}
+#login .err{color:#ffc2b3}
+#login .err.ok{color:#c6f7d2}
+#loginView,#registerView{animation:fadeIn .4s ease both}
+#loginView>*,#registerView>*{animation:rise .45s cubic-bezier(.2,.7,.2,1) both}
+#loginView>*:nth-child(2),#registerView>*:nth-child(2){animation-delay:.05s}
+#loginView>*:nth-child(3),#registerView>*:nth-child(3){animation-delay:.1s}
+#loginView>*:nth-child(4),#registerView>*:nth-child(4){animation-delay:.15s}
+#loginView>*:nth-child(5),#registerView>*:nth-child(5){animation-delay:.2s}
+#registerView>*:nth-child(n+6){animation-delay:.25s}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
 </style>
 </head>
 <body>
@@ -83,15 +158,30 @@ tbody tr:hover{background:#faf9f5}
   <div class="login-box">
     <h1>SIMGUD</h1>
     <p>Sistem Informasi Gudang — di buat oleh RASYA ADITYA PERWIRA IT 3</p>
-    <label>Peran</label>
-    <select id="loginRole"><option value="admin">Admin</option><option value="petugas">Petugas</option></select>
-    <label>Username</label>
-    <input id="loginUser" placeholder="admin / petugas">
-    <label>Kata sandi</label>
-    <input id="loginPass" type="password" placeholder="••••••••">
-    <button class="btn" onclick="doLogin()">Masuk</button>
-    <div class="err" id="loginErr"></div>
-    <div class="hint">Demo — Admin: <b>admin / admin123</b><br>Petugas: <b>petugas / petugas123</b></div>
+    <div id="loginView">
+      <label>Username</label>
+      <input id="loginUser" autocomplete="username">
+      <label>Kata sandi</label>
+      <input id="loginPass" type="password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+      <button class="btn" onclick="doLogin()">Masuk</button>
+      <div class="err" id="loginErr"></div>
+      <div class="switch">Belum punya akun? <a onclick="showAuth('register')">Daftar</a></div>
+    </div>
+    <div id="registerView" class="hide">
+      <label>Nama Lengkap</label>
+      <input id="regNama" autocomplete="name">
+      <label>Username</label>
+      <input id="regUser" autocomplete="username">
+      <label>Kata sandi (min. 6 karakter)</label>
+      <input id="regPass" type="password" autocomplete="new-password">
+      <label>Ulangi kata sandi</label>
+      <input id="regPass2" type="password" autocomplete="new-password">
+      <label>Peran</label>
+      <select id="regRole"><option value="petugas">Petugas</option><option value="admin">Admin</option></select>
+      <button class="btn" onclick="doRegister()">Daftar</button>
+      <div class="err" id="regErr"></div>
+      <div class="switch">Sudah punya akun? <a onclick="showAuth('login')">Masuk</a></div>
+    </div>
   </div>
 </div>
 
@@ -128,15 +218,48 @@ function save(){ try{ localStorage.setItem(LS_KEY, JSON.stringify(DB)); }catch(e
 function todayStr(){ return new Date().toISOString().slice(0,10); }
 
 // ---------- AUTH ----------
-const USERS = {
-  admin:{pass:'admin123',role:'admin',label:'Admin'},
-  petugas:{pass:'petugas123',role:'petugas',label:'Petugas'}
-};
+const USERS_KEY='simgud_users_v1';
+function loadUsers(){
+  try{ const u=JSON.parse(localStorage.getItem(USERS_KEY)||'null'); if(u) return u; }catch(e){}
+  return {
+    admin:{pass:'admin123',role:'admin',label:'Admin'},
+    petugas:{pass:'petugas123',role:'petugas',label:'Petugas'}
+  };
+}
+let USERS = loadUsers();
+function saveUsers(){ try{ localStorage.setItem(USERS_KEY, JSON.stringify(USERS)); }catch(e){} }
+function showAuth(v){
+  document.getElementById('loginView').classList.toggle('hide', v!=='login');
+  document.getElementById('registerView').classList.toggle('hide', v!=='register');
+  document.getElementById('loginErr').textContent='';
+  document.getElementById('regErr').textContent='';
+}
+function doRegister(){
+  const nama=document.getElementById('regNama').value.trim();
+  const u=document.getElementById('regUser').value.trim().toLowerCase();
+  const p=document.getElementById('regPass').value;
+  const p2=document.getElementById('regPass2').value;
+  const role=document.getElementById('regRole').value;
+  const err=document.getElementById('regErr');
+  if(!nama||!u||!p){ err.textContent='Semua kolom wajib diisi.'; return; }
+  if(!/^[a-z0-9_.]{3,20}$/.test(u)){ err.textContent='Username 3–20 karakter: huruf, angka, titik, atau garis bawah.'; return; }
+  if(USERS[u]){ err.textContent='Username sudah dipakai.'; return; }
+  if(p.length<6){ err.textContent='Kata sandi minimal 6 karakter.'; return; }
+  if(p!==p2){ err.textContent='Ulangi kata sandi tidak sama.'; return; }
+  USERS[u]={pass:p,role,label:nama};
+  saveUsers();
+  ['regNama','regUser','regPass','regPass2'].forEach(id=>document.getElementById(id).value='');
+  showAuth('login');
+  document.getElementById('loginUser').value=u;
+  const le=document.getElementById('loginErr');
+  le.className='err ok'; le.textContent='Akun berhasil dibuat. Silakan masuk.';
+}
 function doLogin(){
   const u=document.getElementById('loginUser').value.trim().toLowerCase();
   const p=document.getElementById('loginPass').value;
-  const rec=USERS[u];
+  const rec=Object.prototype.hasOwnProperty.call(USERS,u)?USERS[u]:null;
   const err=document.getElementById('loginErr');
+  err.className='err';
   if(!rec || rec.pass!==p){ err.textContent='Username atau kata sandi salah.'; return; }
   USER={username:u, role:rec.role, label:rec.label};
   err.textContent='';
@@ -173,8 +296,21 @@ function render(tab){
   else if(tab==='distribusi') m.innerHTML=viewDistribusi();
   else if(tab==='laporan') m.innerHTML=viewLaporan();
   wireEvents(tab);
+  if(tab==='dashboard') animateCounters();
 }
 
+function animateCounters(){
+  if(window.matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+  document.querySelectorAll('.kpi .n').forEach(el=>{
+    const target=parseInt(el.textContent,10); if(isNaN(target)||target===0) return;
+    const t0=performance.now(), dur=700;
+    (function step(t){
+      const k=Math.min((t-t0)/dur,1), e=1-Math.pow(1-k,3);
+      el.textContent=Math.round(target*e);
+      if(k<1) requestAnimationFrame(step);
+    })(t0);
+  });
+}
 // ---------- DASHBOARD ----------
 function viewDashboard(){
   const totalBarang=DB.barang.length;
